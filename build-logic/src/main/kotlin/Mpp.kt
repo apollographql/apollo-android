@@ -13,7 +13,7 @@ fun Project.configureMppDefaults(withJs: Boolean = true) {
     jvm()
 
     if (withJs) {
-      js {
+      js(BOTH) {
         useCommonJs()
         browser()
         nodejs()
@@ -59,9 +59,9 @@ fun Project.configureMppDefaults(withJs: Boolean = true) {
 }
 
 /**
- * Same as [configureMppDefaults] but without iOS targets. Tests only run on the JVM and MacOS
+ * Same as [configureMppDefaults] but without iOS targets. Tests only run on the JVM, JS and MacOS
  */
-fun Project.configureMppTestsDefaults() {
+fun Project.configureMppTestsDefaults(withJs: Boolean = true) {
   val kotlinExtension = extensions.findByName("kotlin") as? org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension
   check(kotlinExtension != null) {
     "No multiplatform extension found"
@@ -71,9 +71,16 @@ fun Project.configureMppTestsDefaults() {
      * configure targets
      */
     jvm()
+    if (withJs) {
+      js(IR) {
+        useCommonJs()
+        browser()
+        nodejs()
+      }
+    }
     macosX64("apple")
 
-    addTestDependencies(false)
+    addTestDependencies(withJs)
   }
 }
 
